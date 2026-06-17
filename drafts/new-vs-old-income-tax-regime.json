@@ -1,0 +1,30 @@
+{
+  "slug": "new-vs-old-income-tax-regime",
+  "date": "2026-06-17",
+  "card": "Income Tax Regimes",
+  "crumb": "Tax Regimes",
+  "headline": "New vs Old Income Tax Regime in India: How to Choose",
+  "h1": "New vs Old Income Tax Regime in India: How to Choose",
+  "title": "New vs Old Income Tax Regime in India",
+  "desc": "Compare India’s new and old income tax regimes, default rules, deductions and slab choices for FY 2025-26.",
+  "lede": "For FY 2025-26, the new tax regime is generally the default under section 115BAC of the Income-tax Act, but the old regime can still be chosen by eligible taxpayers and may be better when deductions and exemptions are substantial. Compare tax payable under both regimes using the Finance Act, 2025 slabs, section 87A rebate limits, and your actual deductions before filing.",
+  "body": "<h2>Which regime is the default now?</h2><p>For FY 2025-26, the new tax regime is generally the default for eligible resident taxpayers under section 115BAC of the Income-tax Act. To use the old regime where the new regime is default, file Form No. 10-IEA by the due date under section 139(1), as prescribed by CBDT; taxpayers with business or professional income should also check Form No. 10-IE conditions.</p><h2>How do the slab rates differ?</h2><p>For FY 2025-26, the Finance Act, 2025 sets new-regime slabs for individuals at nil up to ₹4 lakh, 5% for ₹4–8 lakh, 10% for ₹8–12 lakh, 15% for ₹12–16 lakh, 20% for ₹16–20 lakh, 25% for ₹20–24 lakh, and 30% above ₹24 lakh. The old regime continues with lower basic exemption for most resident individuals below 60 years—nil up to ₹2.5 lakh, 5% for ₹2.5–5 lakh, 20% for ₹5–10 lakh, and 30% above ₹10 lakh—while senior and super senior citizens have different old-regime slabs under the Finance Act. Confirm the Finance Act applicable to your assessment year before filing.</p><h2>What deductions change?</h2><p>The old regime allows many exemptions and deductions, such as HRA under section 10(13A), LTA under section 10(5), deductions under Chapter VI-A including sections 80C and 80D, and home loan interest for a self-occupied house under section 24(b). Standard deduction for salary/pension under section 16(ia), as amended by the Finance Act, is currently ₹75,000 and is available in both regimes; confirm the amount for your assessment year. Under section 115BAC, most other exemptions and Chapter VI-A deductions are not available in the new regime, although specified items such as employer contribution to NPS under section 80CCD(2) may apply where conditions are met.</p><h2>What about rebate and cess?</h2><p>Under section 87A of the Income-tax Act, resident individuals may claim a rebate within prescribed limits; for FY 2025-26, this can make tax nil on new-regime total income up to ₹12 lakh, subject to conditions. Surcharge and health and education cess apply as per the Finance Act.</p><h2>Which regime should you choose?</h2><p>Choose by comparing tax payable under both regimes on the same total income, not by looking only at slab rates. The new regime is often simpler and can be beneficial when deductions are low; the old regime can be better when HRA, home loan interest, retirement savings, medical insurance, education loan interest or donations are significant. Special tax rates, surcharge and health and education cess apply as per the Finance Act and the Income-tax Act.</p>",
+  "faqs": [
+    [
+      "Is the new tax regime compulsory?",
+      "No. For FY 2025-26, section 115BAC of the Income-tax Act makes the new regime generally default for eligible resident taxpayers, but the old regime can be chosen by filing Form No. 10-IEA by the due date under section 139(1), as prescribed by CBDT."
+    ],
+    [
+      "Which regime is better for salaried employees?",
+      "It depends on deductions. Compare tax after standard deduction under section 16(ia), HRA under section 10(13A), 80C/80D deductions, and home loan interest under section 24(b); the new regime disallows most of these under section 115BAC."
+    ],
+    [
+      "Can I switch between regimes every year?",
+      "Salaried taxpayers without business income can generally indicate a choice each year for TDS under section 192 of the Income-tax Act and finalise it in the ITR; taxpayers with business or professional income should check section 115BAC and CBDT Form No. 10-IE/10-IEA conditions before switching."
+    ]
+  ],
+  "source": "This article is general information, not advice. Tax rules and figures change — confirm current provisions with the official portals (incometax.gov.in / gst.gov.in) or contact us before acting.",
+  "cta": "/contact/",
+  "cta_label": "Talk to our team",
+  "_status": "DRAFT — needs partner review before publishing"
+}
