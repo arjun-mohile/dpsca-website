@@ -1,0 +1,29 @@
+{
+  "slug": "gst-input-tax-credit-rules",
+  "date": "2026-06-17",
+  "card": "GST ITC rules",
+  "crumb": "GST ITC",
+  "headline": "GST Input Tax Credit Rules in India",
+  "h1": "GST Input Tax Credit Rules in India",
+  "title": "GST Input Tax Credit Rules in India",
+  "desc": "Know when GST input tax credit is allowed, blocked, reversed, and time-limited under Indian GST law.",
+  "lede": "GST input tax credit can be claimed in India only when the conditions in Section 16 of the CGST Act are satisfied, including a valid invoice, receipt of goods or services, tax paid to the Government, supplier details communicated as prescribed, and filing of the return under Section 39 of the CGST Act; blocked credits, reversals and time limits should be checked before filing.",
+  "body": "<h2>Who can claim GST input tax credit?</h2><p>A registered person can claim GST input tax credit only when the conditions in Section 16 of the CGST Act are met: a valid tax invoice or debit note, receipt of goods or services, tax actually paid to the Government, supplier details communicated as prescribed, and filing of the return under Section 39 of the CGST Act.</p><h2>What documents and filings matter?</h2><p>The basic document is a tax invoice, debit note, bill of entry, or other document prescribed under the CGST Rules, and the supplier's invoice details should be reflected in the auto-drafted statement available to the recipient under Section 38 of the CGST Act after supplier filing under Section 37 of the CGST Act.</p><h2>Which credits are blocked?</h2><p>Some credits are blocked even for business use under Section 17(5) of the CGST Act, including specified motor vehicles, food and beverages, outdoor catering, beauty and health services, club and fitness membership, life and health insurance, employee vacation travel benefits, works contract services for construction of immovable property other than plant and machinery, and goods or services used to construct immovable property on own account, subject to exceptions.</p><h2>When must ITC be reversed?</h2><p>ITC must be reversed when the original basis for taking it no longer holds, such as non-payment to the supplier within the prescribed period under Section 16(2) and Rule 37 of the CGST Rules, use for exempt or non-business purposes under Section 17(2) and Rules 42 and 43, blocked credits under Section 17(5), or cancellation/change in registration under Section 18 and Rule 44 of the CGST Rules.</p><h2>What is the deadline for claiming ITC?</h2><p>For a financial year, the normal deadline is the due date for the September return after that year or the annual return, whichever is earlier, under Section 16(4) of the CGST Act, so businesses should not wait until the last filing cycle to reconcile old invoices.</p><h2>How should businesses reconcile ITC?</h2><p>Match purchase books, e-way bills where applicable, GSTR-2B/GSTR-2A, supplier GSTR-1/IFF filings, and GSTR-3B claims before filing, because Rule 36(4) of the CGST Rules currently restricts credit on invoices or debit notes not uploaded by the supplier to five per cent of eligible credit reflected from uploaded supplier details; confirm the notified position before filing.</p>",
+  "faqs": [
+    [
+      "Can I claim ITC if the supplier has not filed GSTR-1?",
+      "Generally, reconcile first and ask the supplier to correct the filing, because Section 16(2)(aa) of the CGST Act links ITC eligibility to supplier filing and communication, and Rule 36(4) of the CGST Rules restricts credit on missing supplier details."
+    ],
+    [
+      "Is ITC available on cars, food and employee travel?",
+      "Usually no for many such items, because Section 17(5) of the CGST Act blocks credits on specified motor vehicles, food and beverages, outdoor catering, club and fitness services, insurance, and employee vacation travel benefits, subject to stated exceptions."
+    ],
+    [
+      "What if goods are received in multiple lots?",
+      "ITC can be taken after receipt of the last lot where goods are sent in lots, as permitted by the proviso to Section 16(2)(b) of the CGST Act."
+    ]
+  ],
+  "source": "This article is general information, not advice. Tax rules and figures change — confirm current provisions with the official portals (incometax.gov.in / gst.gov.in) or contact us before acting.",
+  "cta": "/contact/",
+  "cta_label": "Talk to our team"
+}

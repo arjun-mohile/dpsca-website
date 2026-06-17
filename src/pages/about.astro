@@ -1,0 +1,49 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { SITE } from "../data/site.js";
+
+// [name, role, credential, specialisation]
+const partners = [
+  ["CA Dhirendra Sangoi", "Founding & Managing Partner", "Chartered Accountant (ICAI) · 39+ years in practice", "Assurance, tax & advisory"],
+  ["CA Shreyas Sangoi", "Partner", "Chartered Accountant (ICAI) · Accredited GST Trainer (NACIN)", "Indirect tax (GST)"],
+  ["CA Vishesh Sangoi", "Partner", "Chartered Accountant (ICAI)", "Direct tax & advisory"],
+  ["CA Nilesh Gada", "Partner", "Chartered Accountant (ICAI) · 21+ years with the firm", "Audit & assurance"],
+  ["CA Mittal Gala", "Partner & Operations Head", "Chartered Accountant (ICAI) · with the firm since 2007", "Operations & compliance"],
+];
+
+const personSchemas = partners.map(([n, role, cred]) => ({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: n,
+  jobTitle: role,
+  worksFor: { "@type": "AccountingService", name: SITE.name },
+  hasCredential: {
+    "@type": "EducationalOccupationalCredential",
+    credentialCategory: "ICAI Membership",
+    name: cred,
+  },
+}));
+
+const title = "About & Team | DPS & Co Chartered Accountants, Mumbai";
+const description = `DPS & Co is a Mumbai Chartered Accountancy firm in practice since ${SITE.founded}. Meet the partners and learn about our areas of specialisation.`;
+---
+<Base title={title} description={description} active="About" schemas={personSchemas}>
+  <Breadcrumbs crumbs={[["Home", "/"], ["About", ""]]} />
+  <h1>About {SITE.name}</h1>
+  <p class="lede">DPS &amp; Co is a Mumbai-based Chartered Accountancy firm in practice since {SITE.founded}, offering tax, audit, assurance, and advisory services to businesses and individuals.</p>
+  <p>The firm is a multi-disciplinary practice with partners and a team of qualified professionals across direct tax, indirect tax (GST), audit and assurance, company law, litigation support, and advisory. The founding partner has over 39 years of professional experience. We work with clients across a range of sectors in Mumbai, Thane, and Navi Mumbai.</p>
+  <h2>Our partners</h2>
+  <div class="grid cols-3">
+    {partners.map(([n, role, cred, spec]) => (
+      <div class="card">
+        <h3>{n}</h3>
+        <p class="muted">{role} · {cred}</p>
+        <p>Specialisation: {spec}</p>
+      </div>
+    ))}
+  </div>
+  <p class="muted">ICAI membership numbers can be added to each partner profile where required.</p>
+  <h2>Areas of specialisation</h2>
+  <ul class="ticks"><li>Direct taxation and income tax</li><li>Indirect taxation (GST)</li><li>Statutory, tax and internal audit</li><li>Company law and incorporation</li><li>Business and transaction advisory</li></ul>
+</Base>

@@ -1,0 +1,22 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { SERVICES } from "../../data/services.js";
+
+const title = "Services | DPS & Co Chartered Accountants, Mumbai";
+const description = "GST, income tax, company incorporation, audit and assurance, and business advisory services in Mumbai.";
+---
+<Base title={title} description={description} active="Services">
+  <Breadcrumbs crumbs={[["Home", "/"], ["Services", ""]]} />
+  <h1>Our services</h1>
+  <p class="lede">Compliance and advisory services for businesses and individuals in Mumbai. Choose a service to see the process, documents, and timelines.</p>
+  <div class="grid cols-2">
+    {SERVICES.map((s) => (
+      <a class="card cardlink" href={`/services/${s.slug}/`}>
+        <h3>{s.nav}</h3>
+        <p class="muted">{s.desc}</p>
+        <span class="more">Learn more &rsaquo;</span>
+      </a>
+    ))}
+  </div>
+</Base>

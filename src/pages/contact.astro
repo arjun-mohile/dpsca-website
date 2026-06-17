@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { SITE, ORG_SCHEMA } from "../data/site.js";
+
+const areas = SITE.areas.join(", ");
+const localSchema = { ...ORG_SCHEMA, "@type": ["AccountingService", "LocalBusiness"] };
+const title = "Contact | DPS & Co Chartered Accountants, Mumbai";
+const description = "Contact DPS & Co, Chartered Accountants in Mumbai, for GST, income tax, incorporation, audit and advisory. Phone, email and office address.";
+---
+<Base title={title} description={description} active="Contact" schemas={[localSchema]}>
+  <Breadcrumbs crumbs={[["Home", "/"], ["Contact", ""]]} />
+  <h1>Contact us</h1>
+  <p class="lede">Get in touch to discuss GST, income tax, incorporation, audit, or advisory for your business. We serve clients across {areas}.</p>
+  <div class="grid cols-2">
+    <div>
+      <h2>Office</h2>
+      <p>{SITE.name}<br />{SITE.street}<br />{SITE.locality}, {SITE.region} {SITE.postal}</p>
+      <p><strong>Phone:</strong> {SITE.phone} / 14 / 15 &middot; {SITE.phoneAlt}<br /><strong>Email:</strong> {SITE.email}</p>
+      <p class="muted">Serving Mumbai, Thane, and Navi Mumbai.</p>
+      <iframe title="Office location" src={SITE.mapsEmbed} width="100%" height="260" style="border:0;border-radius:12px" loading="lazy"></iframe>
+    </div>
+    <div>
+      <h2>Send an enquiry</h2>
+      <form class="enquiry" action="#" method="post" aria-label="Enquiry form">
+        <label>Name <input type="text" name="name" required /></label>
+        <label>Email <input type="email" name="email" required /></label>
+        <label>Phone <input type="tel" name="phone" /></label>
+        <label>How can we help? <textarea name="message" rows="4" required></textarea></label>
+        <button class="cta-btn" type="submit">Send enquiry</button>
+        <p class="muted">This form is a placeholder — connect it to your email/CRM before launch.</p>
+      </form>
+    </div>
+  </div>
+</Base>

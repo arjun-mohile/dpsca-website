@@ -1,0 +1,24 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { INDUSTRIES } from "../../data/industries.js";
+
+const title = "Industries We Serve | DPS & Co Chartered Accountants, Mumbai";
+const description = "DPS & Co serves clients across real estate, financial services, IT, manufacturing, and many other sectors in Mumbai.";
+---
+<Base title={title} description={description} active="Industries">
+  <Breadcrumbs crumbs={[["Home", "/"], ["Industries", ""]]} />
+  <p class="eyebrow">Sectors</p>
+  <h1>Industries we serve</h1>
+  <p class="lede">We have experience advising clients across a broad range of sectors in Mumbai, Thane, and Navi Mumbai.</p>
+  <div class="grid cols-3" style="margin-top:22px">
+    {INDUSTRIES.map(([n, ic, b]) => (
+      <div class="tile">
+        <div class="ic" set:html={ic} />
+        <h3>{n}</h3>
+        <p>{b}</p>
+      </div>
+    ))}
+  </div>
+  <div class="ctaband"><h2>Work in one of these sectors?</h2><p>Get in touch to discuss tax, audit, or advisory support for your business.</p><a class="cta-btn" href="/contact/">Contact us</a></div>
+</Base>

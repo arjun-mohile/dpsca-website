@@ -1,0 +1,48 @@
+export const ARTICLES = [
+  {
+    slug: "itr-filing-deadlines", card: "Income tax return deadlines", crumb: "ITR deadlines",
+    headline: "Income tax return deadlines in India",
+    h1: "Income tax return deadlines in India",
+    title: "Income Tax Return Deadlines in India | DPS & Co",
+    desc: "ITR due dates explained: 31 July for individuals, 31 October for audit cases. Reviewed annually.",
+    lede: "For most individuals not subject to a tax audit, the income tax return (ITR) due date is 31 July of the assessment year. For taxpayers requiring a tax audit, it is generally 31 October.",
+    body: "<h2>Why do the dates differ?</h2><p>The due date depends on whether your accounts must be audited. Non-audit individuals file by 31 July; audit cases get additional time to 31 October because the audit must be completed first — as per the Income Tax Act, 1961.</p><h2>What happens if you miss the deadline?</h2><p>A belated return can usually still be filed by 31 December of the assessment year, but late fees and interest may apply, and some benefits (such as carrying forward certain losses) can be lost.</p>",
+    faqs: [
+      ["What is the ITR due date for individuals?", "For individuals not requiring a tax audit, the income tax return due date is generally 31 July of the assessment year, as per the Income Tax Act, 1961, unless extended by CBDT."],
+      ["What is the due date for audit cases?", "For taxpayers who require a tax audit, the return due date is generally 31 October of the assessment year."],
+    ],
+    source: 'Source: Income Tax Act, 1961 and CBDT — <a href="https://www.incometax.gov.in" rel="nofollow">incometax.gov.in</a>. Dates may be extended by official notification; confirm the current year\'s dates before filing.',
+    cta: "/services/income-tax-filing/", cta_label: "See our ITR filing service",
+  },
+  {
+    slug: "gst-return-due-dates", card: "GST return due dates", crumb: "GST due dates",
+    headline: "GST return due dates in India",
+    h1: "GST return due dates (GSTR-1 and GSTR-3B)",
+    title: "GST Return Due Dates (GSTR-1 & GSTR-3B) | DPS & Co",
+    desc: "GST due dates explained: GSTR-3B by the 20th, GSTR-1 by the 11th for monthly filers; QRMP and annual dates too.",
+    lede: "For monthly filers, GSTR-3B is generally due by the 20th of the following month and GSTR-1 by the 11th. Small taxpayers under the QRMP scheme follow staggered quarterly dates.",
+    body: "<h2>Monthly filers</h2><p>GSTR-1 (outward supplies) is generally due by the 11th of the following month, and GSTR-3B (summary and payment) by the 20th — as per CBIC notifications.</p><h2>Quarterly (QRMP) filers</h2><p>Small taxpayers under the Quarterly Return Monthly Payment scheme file GSTR-1 and GSTR-3B quarterly, with GSTR-3B due on the 22nd or 24th of the month following the quarter depending on the state group, while paying tax monthly.</p><h2>Annual return</h2><p>The annual return GSTR-9 is generally due by 31 December of the following financial year, where applicable.</p>",
+    faqs: [
+      ["What is the GSTR-3B due date?", "For monthly filers, GSTR-3B is generally due by the 20th of the following month. QRMP/quarterly filers follow staggered dates (22nd or 24th) by state group, as per CBIC."],
+      ["When is GSTR-1 due?", "For monthly filers, GSTR-1 is generally due by the 11th of the following month."],
+      ["When is the GST annual return due?", "GSTR-9, where applicable, is generally due by 31 December of the following financial year."],
+    ],
+    source: 'Source: CGST Act, 2017 and CBIC — <a href="https://www.gst.gov.in" rel="nofollow">gst.gov.in</a>. Due dates can change by notification; confirm current dates each cycle.',
+    cta: "/services/gst-return-filing/", cta_label: "See our GST return filing service",
+  },
+  {
+    slug: "tds-due-dates", card: "TDS payment & return due dates", crumb: "TDS due dates",
+    headline: "TDS payment and return due dates",
+    h1: "TDS payment and return due dates",
+    title: "TDS Due Dates: Payment & Return Filing | DPS & Co",
+    desc: "TDS due dates: deposit by the 7th of the next month; quarterly returns by 31 Jul, 31 Oct, 31 Jan and 31 May.",
+    lede: "TDS deducted is generally deposited by the 7th of the following month. Quarterly TDS returns are generally due on 31 July, 31 October, 31 January, and 31 May.",
+    body: "<h2>When must TDS be deposited?</h2><p>TDS deducted is generally payable by the 7th of the following month, with a separate date for March (generally 30 April) — as per the Income Tax Act, 1961.</p><h2>Quarterly return due dates</h2><p>Returns (Form 24Q / 26Q) are generally due as follows: Q1 (April–June) by 31 July; Q2 (July–September) by 31 October; Q3 (October–December) by 31 January; Q4 (January–March) by 31 May.</p><h2>TDS certificates</h2><p>Form 16 (salary) is generally issued by 15 June after the financial year; Form 16A (non-salary) is issued quarterly.</p>",
+    faqs: [
+      ["When must TDS be deposited?", "TDS deducted is generally required to be deposited by the 7th of the following month, with a separate date for March, as per the Income Tax Act, 1961."],
+      ["What are the TDS return due dates?", "Quarterly TDS returns are generally due on 31 July, 31 October, 31 January, and 31 May for Q1 to Q4 respectively."],
+    ],
+    source: 'Source: Income Tax Act, 1961 and CBDT — <a href="https://www.incometax.gov.in" rel="nofollow">incometax.gov.in</a> / TRACES. Confirm current dates before filing.',
+    cta: "/services/tds-return-filing/", cta_label: "See our TDS return filing service",
+  },
+];

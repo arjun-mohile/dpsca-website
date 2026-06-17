@@ -1,0 +1,38 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Faq from "../../components/Faq.astro";
+import { SITE, TODAY } from "../../data/site.js";
+import { ARTICLES } from "../../data/articles.js";
+
+export function getStaticPaths() {
+  const postModules = import.meta.glob("../../content/posts/*.json", { eager: true });
+  const posts = Object.values(postModules).map((m) => m.default ?? m);
+  const all = [...ARTICLES, ...posts];
+  return all.map((a) => ({ params: { slug: a.slug }, props: { a } }));
+}
+
+const { a } = Astro.props;
+const d = a.date || TODAY;
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: a.headline,
+  datePublished: d,
+  dateModified: d,
+  author: { "@type": "Organization", name: SITE.name },
+  publisher: { "@type": "Organization", name: SITE.name },
+  url: SITE.domain + `/resources/${a.slug}/`,
+};
+---
+<Base title={a.title} description={a.desc} active="Resources" schemas={[articleSchema]}>
+  <Breadcrumbs crumbs={[["Home", "/"], ["Resources", "/resources/"], [a.crumb, ""]]} />
+  <h1>{a.h1}</h1>
+  <p class="updated">Last updated: {d}</p>
+  <p class="lede">{a.lede}</p>
+  <Fragment set:html={a.body} />
+  <Faq faqs={a.faqs} />
+  <p class="src" set:html={a.source} />
+  <p><a class="cta-btn" href={a.cta}>{a.cta_label}</a></p>
+</Base>

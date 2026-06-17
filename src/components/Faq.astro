@@ -1,0 +1,26 @@
+---
+// faqs: [[question, answerHtml], ...]
+const { faqs = [] } = Astro.props;
+
+const strip = (html) => String(html).replace(/<[^>]+>/g, "").trim();
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(([q, a]) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: strip(a) },
+  })),
+};
+---
+<section class="faq">
+  <h2>Frequently asked questions</h2>
+  {faqs.map(([q, a]) => (
+    <details>
+      <summary>{q}</summary>
+      <div class="a" set:html={a} />
+    </details>
+  ))}
+</section>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

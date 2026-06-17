@@ -1,0 +1,23 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { PRACTICES } from "../../data/practices.js";
+
+const title = "Practice Areas | DPS & Co Chartered Accountants, Mumbai";
+const description = "Our practice areas: Advisory, Tax & Regulatory, Litigation Support, and Audit & Assurance — for Mumbai businesses.";
+---
+<Base title={title} description={description} active="Practices">
+  <Breadcrumbs crumbs={[["Home", "/"], ["Practices", ""]]} />
+  <p class="eyebrow">What we do</p>
+  <h1>Our practice areas</h1>
+  <p class="lede">Four practice areas covering the full range of tax, audit, assurance, and advisory work, with focused services under each.</p>
+  <div class="grid cols-2" style="margin-top:22px">
+    {PRACTICES.map((p) => (
+      <a class="tile" href={`/practices/${p.slug}/`}>
+        <div class="ic" set:html={p.icon} />
+        <h3>{p.name}</h3>
+        <p>{p.desc}</p>
+      </a>
+    ))}
+  </div>
+</Base>

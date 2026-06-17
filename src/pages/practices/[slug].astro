@@ -1,0 +1,39 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { SITE } from "../../data/site.js";
+import { PRACTICES } from "../../data/practices.js";
+
+export function getStaticPaths() {
+  return PRACTICES.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+
+const { p } = Astro.props;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: p.name,
+  provider: { "@type": "AccountingService", name: SITE.name, url: SITE.domain },
+  areaServed: SITE.areas,
+  url: SITE.domain + `/practices/${p.slug}/`,
+  description: p.desc,
+};
+---
+<Base title={p.title} description={p.desc} active="Practices" schemas={[serviceSchema]}>
+  <Breadcrumbs crumbs={[["Home", "/"], ["Practices", "/practices/"], [p.name, ""]]} />
+  <p class="eyebrow">{p.eyebrow}</p>
+  <h1>{p.name} services in Mumbai</h1>
+  <p class="lede">{p.intro}</p>
+  <h2>What this practice covers</h2>
+  <ul class="ticks">
+    {p.items.map(([l, u]) => (u ? <li><a href={u}>{l}</a></li> : <li>{l}</li>))}
+  </ul>
+  <h2>Related services</h2>
+  <div class="grid cols-3">
+    {p.related.map(([l, u]) => (
+      <a class="tile" href={u}><h3>{l}</h3><p>View service &rsaquo;</p></a>
+    ))}
+  </div>
+  <div class="ctaband"><h2>Discuss your requirement</h2><p>Tell us what you need and we'll point you to the right service and team.</p><a class="cta-btn" href="/contact/">Contact us</a></div>
+</Base>

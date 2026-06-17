@@ -1,0 +1,46 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Faq from "../../components/Faq.astro";
+import { SITE } from "../../data/site.js";
+import { SERVICES } from "../../data/services.js";
+
+export function getStaticPaths() {
+  return SERVICES.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+
+const { s } = Astro.props;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: s.nav,
+  serviceType: s.nav,
+  provider: { "@type": "AccountingService", name: SITE.name, url: SITE.domain },
+  areaServed: SITE.areas,
+  url: SITE.domain + `/services/${s.slug}/`,
+  description: s.desc,
+};
+---
+<Base title={s.title} description={s.desc} active="Services" schemas={[serviceSchema]}>
+  <Breadcrumbs crumbs={[["Home", "/"], ["Services", "/services/"], [s.nav, ""]]} />
+  <h1>{s.h1}</h1>
+  <p class="lede">{s.answer}</p>
+  <Fragment set:html={s.what} />
+  <h2>What is the process?</h2>
+  <ol class="steps">{s.steps.map((x) => <li>{x}</li>)}</ol>
+  <h2>What documents are required?</h2>
+  <ul class="ticks">{s.docs.map((x) => <li>{x}</li>)}</ul>
+  <div class="metarow">
+    <div><span class="k">Typical timeline</span>{s.timeline}</div>
+    <div><span class="k">Fees</span>{s.pricing}</div>
+  </div>
+  <Fragment set:html={s.source} />
+  <p><a class="cta-btn" href="/contact/">Request a quote</a></p>
+  <Faq faqs={s.faqs} />
+  <h2>Related services</h2>
+  <ul class="ticks">
+    {s.related.map(([l, u]) => <li><a href={u}>{l}</a></li>)}
+    <li><a href="/contact/">Talk to us about your requirement</a></li>
+  </ul>
+</Base>

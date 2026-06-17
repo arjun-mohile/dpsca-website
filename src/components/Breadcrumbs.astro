@@ -1,0 +1,28 @@
+---
+import { SITE } from "../data/site.js";
+
+// crumbs: [[name, path], ...]  — last item typically has an empty path.
+const { crumbs = [] } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: crumbs
+    .filter(([, p]) => p)
+    .map(([n, p], i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: n,
+      item: SITE.domain + p,
+    })),
+};
+---
+<nav class="crumbs wrap" aria-label="Breadcrumb">
+  {crumbs.map(([n, p], i) => (
+    <>
+      {i > 0 && <Fragment set:html=" &rsaquo; " />}
+      {p ? <a href={p}>{n}</a> : <span>{n}</span>}
+    </>
+  ))}
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

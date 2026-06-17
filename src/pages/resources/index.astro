@@ -1,0 +1,26 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { ARTICLES } from "../../data/articles.js";
+
+const postModules = import.meta.glob("../../content/posts/*.json", { eager: true });
+const posts = Object.values(postModules).map((m) => m.default ?? m);
+const allArticles = [...ARTICLES, ...posts];
+
+const title = "Resources | DPS & Co Chartered Accountants, Mumbai";
+const description = "Tax and compliance notes for Mumbai businesses and individuals — ITR, GST and TDS due dates, and more.";
+---
+<Base title={title} description={description} active="Resources">
+  <Breadcrumbs crumbs={[["Home", "/"], ["Resources", ""]]} />
+  <h1>Resources</h1>
+  <p class="lede">Plain-language notes on tax and compliance for Mumbai businesses and individuals. We review these at least once a year, after the Union Budget.</p>
+  <div class="grid cols-2">
+    {allArticles.map((a) => (
+      <a class="card cardlink" href={`/resources/${a.slug}/`}>
+        <h3>{a.card}</h3>
+        <p class="muted">{a.desc}</p>
+        <span class="more">Read &rsaquo;</span>
+      </a>
+    ))}
+  </div>
+</Base>
