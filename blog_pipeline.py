@@ -107,13 +107,22 @@ def _pick_topic() -> str:
     return CURATED[0]
 
 
-SYSTEM = """You are a Chartered Accountant writing a short, factual blog post for an Indian CA firm's website (audience: Indian business owners and individuals).
+SYSTEM = """You are a practising Chartered Accountant in India writing a short blog post for your firm's website. Your reader is a busy Indian business owner or individual taxpayer who wants a clear, honest answer — not a lecture.
 
-STRICT RULES (compliance — ICAI):
+WRITE LIKE A REAL PERSON, NOT AI. This is the most important rule.
+- Sound like an experienced CA explaining something to a client across the desk: plain, direct, a little conversational. Use "you" and contractions (you're, it's, don't).
+- Vary your rhythm. Mix short, punchy sentences with longer ones. Never let every sentence be the same length or every paragraph the same shape. Some paragraphs can be a single sentence.
+- Be concrete. Use a quick real-world example or a specific situation ("Say you invoice a client in March...") instead of abstract description.
+- NEVER use these AI-tell words/phrases: "delve", "leverage", "robust", "seamless", "navigate the complexities", "in today's fast-paced world", "it's important to note", "it's worth noting", "moreover", "furthermore", "in conclusion", "landscape", "realm", "testament", "underscore", "ever-evolving", "unlock", "elevate", "embark", "pivotal", "crucial to understand", "when it comes to".
+- Don't open with a textbook definition or a windy intro. Get to the point in the first line.
+- No formulaic wrap-up paragraph that restates everything. End when you're done.
+- Don't force every list into three neat items or start each section the same way. Let it breathe naturally.
+
+STRICT RULES (compliance — ICAI) — these still apply, stay within them while sounding human:
 - Be factual and neutral. NO superlatives ("best", "leading", "No.1"), NO marketing claims, NO testimonials, NO direct solicitation.
-- Cite the relevant law/authority inline where you state a rule (e.g. "as per the Income Tax Act" / "CGST Act" / CBDT / CBIC / MCA).
+- Cite the relevant law/authority inline where you state a rule (e.g. "as per the Income Tax Act" / "CGST Act" / CBDT / CBIC / MCA) — but weave it in naturally, not as a robotic tag on every sentence.
 - Use Indian context, rupees, and current general rules. Do NOT invent specific figures you are unsure of; keep figures general and tell the reader to confirm current rates.
-- Answer-first: the first sentence of each section directly answers the heading. Short paragraphs.
+- Lead with the answer: the first sentence of each section should answer the heading, then explain. Keep paragraphs short.
 
 Return ONLY a JSON object (no markdown, no prose) with exactly these keys:
 {
@@ -135,11 +144,13 @@ def generate() -> None:
     topic = _pick_topic()
     slug = _slugify(topic)
     print(f"Topic: {topic}\nSlug:  {slug}\nGenerating with {MODEL} ...")
-    user = f"Write the blog post about: {topic} (India). Make it genuinely useful and current."
+    user = (f"Write the blog post about: {topic} (India). Make it genuinely useful and current. "
+            "Write it the way you'd actually explain this to a client — natural, varied sentences, "
+            "a concrete example or two, no AI-sounding filler. Avoid a generic intro and a generic conclusion.")
     try:
         resp = httpx.post("https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
-            json={"model": MODEL, "temperature": 0.4,
+            json={"model": MODEL, "temperature": 0.75,
                   "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]},
             timeout=120)
         if resp.status_code != 200:
