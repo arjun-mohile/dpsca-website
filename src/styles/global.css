@@ -167,7 +167,7 @@ form.enquiry input:focus, form.enquiry textarea:focus { outline: none; border-co
 footer.site { background: linear-gradient(180deg, #0a1f3c, #07182e); color: #c4d3e8; margin-top: 60px; padding: 52px 0 26px; }
 footer.site a { color: #e7eefa; } footer.site a:hover { color: #fff; }
 footer.site .grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
-footer.site h4 { color: #fff; margin: 0 0 12px; font-size: .95rem; }
+footer.site h3 { color: #fff; margin: 0 0 12px; font-size: .95rem; }
 footer.site ul { list-style: none; padding: 0; margin: 0; line-height: 2; font-size: .92rem; }
 footer.site .legal { border-top: 1px solid #20406b; margin-top: 30px; padding-top: 18px; font-size: .82rem; color: #93a7c4; }
 

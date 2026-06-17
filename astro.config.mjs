@@ -6,4 +6,5 @@ export default defineConfig({
   site: "https://dpsca.in",
   integrations: [sitemap()],
   server: { port: 4321, open: true },
+  build: { inlineStylesheets: "always" },
 });

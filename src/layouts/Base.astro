@@ -1,7 +1,10 @@
 ---
 import { SITE, NAV } from "../data/site.js";
+import "../styles/global.css";
 
 const { title, description, active = "", schemas = [], hasHero = false } = Astro.props;
+
+const fontHref = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap";
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const year = new Date().getFullYear();
@@ -21,8 +24,8 @@ const ldBlocks = (schemas || []).filter(Boolean);
 <meta property="og:url" content={canonical} />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-<link rel="stylesheet" href="/styles.css" />
+<link rel="preload" as="style" href={fontHref} onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link rel="stylesheet" href={fontHref} /></noscript>
 {ldBlocks.map((s) => (
   <script type="application/ld+json" set:html={JSON.stringify(s)} />
 ))}
@@ -49,19 +52,19 @@ const ldBlocks = (schemas || []).filter(Boolean);
       <strong>{SITE.name}</strong>
       <p class="muted" style="color:#9fb2cd">Tax, audit, assurance and advisory services for businesses and individuals across {SITE.areas.join(", ")}. Established {SITE.founded}.</p>
     </div>
-    <div><h4>Practices</h4><ul>
+    <div><h3>Practices</h3><ul>
       <li><a href="/practices/advisory/">Advisory</a></li>
       <li><a href="/practices/tax-regulatory/">Tax &amp; Regulatory</a></li>
       <li><a href="/practices/litigation/">Litigation</a></li>
       <li><a href="/practices/audit-assurance/">Audit &amp; Assurance</a></li>
     </ul></div>
-    <div><h4>Services</h4><ul>
+    <div><h3>Services</h3><ul>
       <li><a href="/services/gst-registration/">GST Registration</a></li>
       <li><a href="/services/income-tax-filing/">Income Tax Filing</a></li>
       <li><a href="/services/company-incorporation/">Company Incorporation</a></li>
       <li><a href="/services/">All services</a></li>
     </ul></div>
-    <div><h4>Firm</h4><ul>
+    <div><h3>Firm</h3><ul>
       <li><a href="/industries/">Industries</a></li>
       <li><a href="/resources/">Resources</a></li>
       <li><a href="/about/">About &amp; Team</a></li>
