@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# secrets / env
+.env
+.env.*
+!.env.example
+
+# python (blog pipeline)
+__pycache__/
+*.pyc
+
+# os / editor
+.DS_Store
+Thumbs.db
