@@ -10,6 +10,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "dpsca-website",
   "compatibility_date": "2026-06-17",
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "./dist"
   }
