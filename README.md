@@ -72,16 +72,21 @@ Notes:
 ## Deployment (Cloudflare)
 
 The static build (`dist/`) is served by Cloudflare Workers static assets, configured in
-[`wrangler.jsonc`](wrangler.jsonc). For the deploy to succeed, set these once in the Cloudflare
-project dashboard (Workers & Pages → `dpsca-website` → Settings → Build):
+[`wrangler.jsonc`](wrangler.jsonc). The build runs **automatically**: a `postinstall` script
+(`astro build`) executes during Cloudflare's dependency install, so `dist/` exists before the
+deploy command runs — **no "Build command" needs to be set in the dashboard**. The deploy
+command `npx wrangler versions upload` (already set) then uploads `dist/`.
 
-- **Build command:** `npm install && npm run build`  *(required — produces `dist/`)*
-- **Deploy command:** `npx wrangler versions upload`  *(already set)*
-- **Branch control:** Production branch = `main`; **disable non-production / preview branch
-  builds** so feature branches (e.g. `blog_email`) don't trigger failing builds.
+Recommended (optional) dashboard setting: under Workers & Pages → `dpsca-website` → Settings →
+Build, set the **Production branch to `main`** and **disable non-production / preview branch
+builds**, so feature branches (e.g. `blog_email`) don't trigger builds.
 
-End-to-end flow: the email tool publishes an approved post to `main` → Cloudflare runs the build
-→ uploads `dist/` → the post is live at `dpsca.in/resources/<slug>/`.
+End-to-end flow: the email tool publishes an approved post to `main` → Cloudflare installs deps
+(which builds `dist/` via `postinstall`) → uploads `dist/` → the post is live at
+`dpsca.in/resources/<slug>/`.
+
+> Note: `postinstall` also means a local `npm install` runs a build. If you'd rather avoid that,
+> remove the `postinstall` script and instead set the dashboard **Build command** to `npm run build`.
 
 ## Notes before go-live
 
