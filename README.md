@@ -67,7 +67,47 @@ Notes:
   variable. (For quick tests you can set `SENDER_APP_PASSWORD` and move `app_password.enc` aside.)
 - **Run the scheduled job on a `main` checkout** — publishing commits to the current branch, and
   only `main` deploys. Set `BLOG_PUBLISH_GIT=0` to write a post without committing (testing).
-- Schedule `--once` (send) and `--check-replies` (act) with Windows Task Scheduler.
+- The Gmail account needs **IMAP enabled** for `--check-replies` to read replies.
+
+### Editing the draft by email (reply with a `.txt`)
+
+To change the post, **reply to the approval email and attach a plain-text file** (`.txt`/`.md`).
+The reply is treated as a "corrected" submission and published in place of `blog.json`.
+
+Format the file like this — **the first line becomes the blog title** (and the page URL),
+then leave a blank line and write the body, separating paragraphs with blank lines:
+
+```
+Understanding GST Late Fees
+
+Late filing of GST returns attracts a late fee under the CGST Act...
+
+A second paragraph here...
+```
+
+A plain `.txt` produces a basic post (title + paragraphs); for FAQs, a custom description or
+sub-headings, attach a **`.json`** file in the post schema instead (same fields as
+`src/content/posts/*.json`). Non-text attachments (e.g. `.pdf`, `.docx`) are saved to
+`corrected_blogs/` for manual handling and are **not** auto-published.
+
+### Full automation (zero manual steps)
+
+After the one-time encrypted-password setup, register the scheduled tasks so sends and reply
+publishing run on their own:
+
+```powershell
+cd email_blog
+.\schedule.ps1     # registers two Windows scheduled tasks (see below)
+```
+
+`schedule.ps1` creates:
+- **"DPS Blog Email - Send"** — weekly, runs `run.ps1 --once` (sends the approval email).
+- **"DPS Blog Email - Replies"** — every 30 minutes, runs `run.ps1 --check-replies` (reads
+  replies and, on approval or a `.txt`/`.json` edit, publishes to the site and pushes → deploys).
+
+Once registered, the loop is fully hands-off: a reply with a `.txt` is picked up within 30
+minutes, converted, committed to `main`, and deployed by Cloudflare — it then shows on the site.
+Keep this working copy on the **`main`** branch so published posts deploy.
 
 ## Deployment (Cloudflare)
 
