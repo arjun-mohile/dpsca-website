@@ -42,12 +42,14 @@ Get a Gmail App Password at https://myaccount.google.com/apppasswords
 import argparse
 import email
 import getpass
+import html as _html
 import imaplib
 import json
 import logging
 import os
 import re
 import smtplib
+import subprocess
 import time
 from datetime import datetime, timezone
 from email.message import EmailMessage
@@ -70,6 +72,19 @@ CORRECTED_DIR = SCRIPT_DIR / "corrected_blogs"
 LOG_FILE = SCRIPT_DIR / "blogchecker.log"
 KEY_ENV = "BLOG_FERNET_KEY"
 WEEK_SECONDS = 7 * 24 * 60 * 60
+
+# --- Publishing to the Astro site ------------------------------------------
+# The live site (deployed by Cloudflare from the repo) reads posts from
+# src/content/posts/*.json. Publishing writes an approved post there and pushes.
+REPO_ROOT = SCRIPT_DIR.parent
+POSTS_DIR = REPO_ROOT / "src" / "content" / "posts"
+# Set BLOG_PUBLISH_GIT=0 to write the post file WITHOUT committing/pushing (testing).
+PUBLISH_GIT_ENV = "BLOG_PUBLISH_GIT"
+DEFAULT_SOURCE_HTML = (
+    "This article is general information, not professional advice. Tax and "
+    "regulatory rules change — confirm the current position with the official "
+    "portals (incometax.gov.in / gst.gov.in / mca.gov.in) or contact us before acting."
+)
 
 # Reply classification keywords (matched against the leading word of the reply).
 APPROVE_WORDS = {"yes", "y", "ok", "okay", "approve", "approved", "yep", "yeah"}
@@ -159,6 +174,15 @@ def load_blog_body():
     if not body:
         raise ValueError("No blog content could be read from blog.json")
     return body
+
+
+def load_blog_raw():
+    """Return the parsed blog.json (dict/list/str) for publishing, preserving fields
+    such as title, date, desc and faqs that the flattened email body discards."""
+    if not BLOG_FILE.exists():
+        raise FileNotFoundError(f"{BLOG_FILE} not found")
+    with BLOG_FILE.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 # --- Encrypted app password -------------------------------------------------
@@ -268,21 +292,140 @@ def run_once():
     return send_email(body)
 
 
-# --- Website upload (STUB) --------------------------------------------------
-def upload_blog(content, source):
-    """Placeholder for pushing an approved blog to the website.
+# --- Website upload ---------------------------------------------------------
+def _slugify(text):
+    return re.sub(r"[^a-z0-9]+", "-", str(text or "").lower()).strip("-") or "post"
 
-    NOT IMPLEMENTED YET — this is the single extension point for the future
-    website-upload code. ``source`` is "approved" (Arjun said yes, ``content``
-    is the current blog.json text) or "corrected" (``content`` is Arjun's
-    attached corrected text).
-    """
-    length = len(content) if isinstance(content, str) else len(str(content))
-    log.info(
-        "TODO upload (%s): website upload not yet implemented (blog is %d chars).",
-        source, length,
-    )
-    # Future: publish `content` to the DPS website here.
+
+def _plain(text):
+    """Collapse text to a single clean line (for desc/lede derivation)."""
+    return re.sub(r"\s+", " ", str(text or "")).strip()
+
+
+def _truncate(text, limit):
+    text = _plain(text)
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0]
+    return (cut or text[:limit]).rstrip(".,;:") + "…"
+
+
+def _html_paragraphs(text):
+    """Turn plain blog text into safe HTML: paragraphs split on blank lines."""
+    blocks = re.split(r"\n\s*\n", str(text or "").strip())
+    paras = [_html.escape(b.strip()).replace("\n", "<br>") for b in blocks if b.strip()]
+    return "".join(f"<p>{p}</p>" for p in paras)
+
+
+def _to_astro_post(content, source):
+    """Convert an approved/corrected blog into the site's post schema (the same
+    shape as src/content/posts/*.json). Accepts a dict (blog.json), a full
+    post dict, a JSON string, or plain text."""
+    # A corrected attachment may arrive as a JSON string — parse it if so.
+    if isinstance(content, str):
+        stripped = content.strip()
+        if stripped.startswith("{") or stripped.startswith("["):
+            try:
+                content = json.loads(stripped)
+            except json.JSONDecodeError:
+                pass
+    if isinstance(content, list):
+        content = content[0] if content else {}
+
+    today = datetime.now(timezone.utc).date().isoformat()
+
+    if isinstance(content, dict):
+        # If it already looks like a full post, pass it through with safe defaults.
+        if content.get("body") and content.get("lede"):
+            title = content.get("h1") or content.get("headline") or content.get("title") or "Untitled"
+            slug = content.get("slug") or _slugify(title)
+            faqs = content.get("faqs") if isinstance(content.get("faqs"), list) else []
+            return {
+                "slug": slug, "date": content.get("date") or today,
+                "card": content.get("card") or _truncate(title, 60),
+                "crumb": content.get("crumb") or _truncate(title, 30),
+                "headline": content.get("headline") or title,
+                "h1": content.get("h1") or title,
+                "title": content.get("title") or f"{title} | DPS & Co",
+                "desc": content.get("desc") or _truncate(content["lede"], 155),
+                "lede": content["lede"], "body": content["body"], "faqs": faqs,
+                "source": content.get("source") or DEFAULT_SOURCE_HTML,
+                "cta": content.get("cta") or "/contact/",
+                "cta_label": content.get("cta_label") or "Talk to our team",
+            }
+        title = content.get("title") or content.get("heading") or "Untitled"
+        date = content.get("date") or today
+        raw = content.get("content") or content.get("body") or content.get("text") or ""
+        desc = content.get("desc")
+        faqs = content.get("faqs") if isinstance(content.get("faqs"), list) else []
+    else:
+        text = str(content or "").strip()
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        title = lines[0].strip() if lines else "Untitled"
+        raw = "\n\n".join(text.split("\n\n")[1:]).strip() or text
+        date, desc, faqs = today, None, []
+
+    plain_first = _plain(raw).split("…")[0]
+    return {
+        "slug": _slugify(title), "date": date,
+        "card": _truncate(title, 60), "crumb": _truncate(title, 30),
+        "headline": title, "h1": title, "title": _truncate(f"{title} | DPS & Co", 62),
+        "desc": desc or _truncate(raw, 155),
+        "lede": _truncate(raw, 300) if raw else title,
+        "body": _html_paragraphs(raw),
+        "faqs": faqs, "source": DEFAULT_SOURCE_HTML,
+        "cta": "/contact/", "cta_label": "Talk to our team",
+    }
+
+
+def publish_post(content, source):
+    """Write an approved/corrected blog into src/content/posts/<slug>.json.
+    Returns the written Path. Pure file operation (no git)."""
+    post = _to_astro_post(content, source)
+    POSTS_DIR.mkdir(parents=True, exist_ok=True)
+    dest = POSTS_DIR / f"{post['slug']}.json"
+    with dest.open("w", encoding="utf-8") as fh:
+        json.dump(post, fh, indent=2, ensure_ascii=False)
+    log.info("Wrote post '%s' (%s) to %s", post["slug"], source, dest)
+    return dest
+
+
+def _git_publish(path):
+    """Stage, commit and push the new post so Cloudflare redeploys the site.
+
+    Skipped when BLOG_PUBLISH_GIT=0 (used by tests). Runs on the repo's current
+    branch — for live deployment the scheduled job should run on a checkout of
+    the deploy branch (main)."""
+    if os.environ.get(PUBLISH_GIT_ENV, "1") == "0":
+        log.info("BLOG_PUBLISH_GIT=0 — wrote post but skipped git commit/push.")
+        return True
+    rel = str(Path(path).resolve().relative_to(REPO_ROOT))
+    msg = f"Publish blog post: {Path(path).stem}"
+    try:
+        subprocess.run(["git", "-C", str(REPO_ROOT), "add", rel], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(REPO_ROOT), "commit", "-m", msg], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["git", "-C", str(REPO_ROOT), "push"], check=True,
+                       capture_output=True, text=True)
+    except FileNotFoundError:
+        log.error("git not found on PATH — post written but not pushed.")
+        return False
+    except subprocess.CalledProcessError as exc:
+        log.error("git publish failed: %s", (exc.stderr or exc.stdout or str(exc)).strip())
+        return False
+    log.info("Committed and pushed %s — site will redeploy.", rel)
+    return True
+
+
+def upload_blog(content, source):
+    """Publish an approved ('approved') or corrected ('corrected') blog to the site."""
+    try:
+        path = publish_post(content, source)
+    except Exception as exc:  # conversion / write failure
+        log.error("Could not publish blog (%s): %s", source, exc)
+        return
+    _git_publish(path)
 
 
 # --- Reply processing -------------------------------------------------------
@@ -386,11 +529,11 @@ def _save_correction(filename, raw):
 def handle_reply(decision, reply_text, attachment):
     """Act on a classified reply. Returns True if the message should be marked read."""
     if decision == "approved":
-        log.info("Reply APPROVED — uploading current blog.")
+        log.info("Reply APPROVED — publishing current blog.")
         try:
-            content = load_blog_body()
+            content = load_blog_raw()
         except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
-            log.error("Approved, but could not read blog.json to upload: %s", exc)
+            log.error("Approved, but could not read blog.json to publish: %s", exc)
             return True
         upload_blog(content, source="approved")
         return True

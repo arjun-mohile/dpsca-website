@@ -1,0 +1,6 @@
+# Runtime artifacts and secrets — must not be committed.
+__pycache__/
+*.pyc
+*.log
+app_password.enc
+corrected_blogs/

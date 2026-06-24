@@ -1,6 +1,12 @@
 {
-  "title": "Welcome to the New DPS Website",
-  "date": "2026-06-17",
-  "author": "DPS Web Team",
-  "content": "We're excited to launch the rebuilt DPS website. Built on a modern, fast foundation, the new site loads quicker, looks cleaner on phones and laptops alike, and makes school news, events, and resources easier to find.\n\nOver the coming weeks we'll be adding more sections: a refreshed admissions guide, a photo gallery from recent events, and a calendar you can sync to your own devices.\n\nThank you for visiting, and stay tuned for weekly updates right here on the blog."
+  "title": "Advance Tax: Who Needs to Pay and When",
+  "date": "2026-06-24",
+  "author": "DPS & Co",
+  "desc": "A plain-language guide to advance tax in India — who must pay it, the instalment due dates, and how to avoid interest under the Income Tax Act.",
+  "content": "Advance tax is income tax paid in instalments during the financial year, rather than as a single payment at the end. Under the Income Tax Act, 1961, a taxpayer whose total tax liability for the year is 10,000 rupees or more is generally required to pay advance tax.\n\nSalaried individuals usually have tax deducted at source (TDS) by their employer. Even so, advance tax may still apply where there is additional income — for example interest, rent, capital gains, or professional income — on which enough tax has not already been deducted.\n\nFor most taxpayers, advance tax is paid in four instalments during the year, with due dates falling in June, September, December, and March. Senior citizens who do not have income from a business or profession are generally not required to pay advance tax.\n\nPaying the correct amount on time helps avoid interest under Sections 234B and 234C of the Income Tax Act. Where income is hard to estimate early in the year, a reasonable projection can be revised in the later instalments.\n\nBecause individual circumstances differ, it is sensible to review your expected income early in the financial year and to confirm the current due dates and rates before each instalment.",
+  "faqs": [
+    ["Who has to pay advance tax?", "Generally, any taxpayer whose total tax liability for the year is 10,000 rupees or more after TDS, as per the Income Tax Act, 1961. Senior citizens without business or professional income are usually exempt."],
+    ["What are the advance tax due dates?", "For most taxpayers, advance tax is paid in four instalments during the financial year, with due dates in June, September, December and March. Confirm the exact dates for the current year before paying."],
+    ["What happens if I miss an instalment?", "Interest may apply under Sections 234B and 234C of the Income Tax Act. Paying a reasonable estimate on time, and adjusting it in later instalments, helps reduce the interest."]
+  ]
 }
