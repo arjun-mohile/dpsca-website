@@ -2,5 +2,5 @@
 __pycache__/
 *.pyc
 *.log
-app_password.enc
+app_password.enc*
 corrected_blogs/

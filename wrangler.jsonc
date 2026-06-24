@@ -1,0 +1,16 @@
+{
+  // Cloudflare Workers config for deploying the built Astro site as static assets.
+  // The site is a static Astro build (output: dist/), so this serves dist/ directly —
+  // no server Worker script is needed.
+  //
+  // Required Cloudflare project settings (set once in the dashboard):
+  //   Build command:  npm install && npm run build      (so dist/ is produced)
+  //   Deploy command: npx wrangler versions upload       (already set)
+  //   Production branch: main; disable non-production/preview branch builds.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dpsca-website",
+  "compatibility_date": "2026-06-17",
+  "assets": {
+    "directory": "./dist"
+  }
+}

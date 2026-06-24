@@ -9,6 +9,11 @@ dist/
 .env
 .env.*
 !.env.example
+# blog-email encrypted password and any local backups of it (never commit)
+app_password.enc*
+
+# cloudflare / wrangler
+.wrangler/
 
 # python (blog pipeline)
 __pycache__/
