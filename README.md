@@ -26,20 +26,70 @@ src/
 public/        styles.css, main.js, robots.txt, llms.txt
 ```
 
-## Weekly blog workflow (draft → review → publish)
+## Weekly blog workflow (generate → email-approve → publish)
 
-Generates short, ICAI-compliant draft posts from trending/curated finance topics
-via OpenRouter. Drafts are **not** auto-published — a partner reviews each one first.
+The blog is fully chained: an AI **generates** a draft, it's **emailed to a partner
+for approval**, and a one-word reply **publishes it live**. Nothing goes on the site
+without a human "yes".
 
-```bash
-py blog_pipeline.py generate          # create a draft in drafts/
-py blog_pipeline.py list              # list drafts + published posts
-py blog_pipeline.py approve <slug>    # move draft -> src/content/posts/
-py blog_pipeline.py reject  <slug>    # discard a draft
-npm run build                         # rebuild so the new post goes live
+```
+[1] blog_pipeline.py generate   ──>  writes email_blog/blog.json   (OpenRouter, keyword-driven topic)
+[2] email_blog  --once          ──>  emails that post to the partner for approval
+[3] partner replies "yes"       ──>  email_blog --check-replies publishes it -> git push -> Cloudflare redeploys
 ```
 
-Set `OPENROUTER_API_KEY` in `.env` (copy from `.env.example`). `.env` is git-ignored.
+### 1. Generate (OpenRouter, keyword-driven)
+
+`blog_pipeline.py` picks a fresh topic and writes a short, ICAI-compliant post into
+`email_blog/blog.json` (the file the approval email reads). Topic selection is
+keyword-driven: it pulls trending India finance terms from Google Trends (optional
+`pytrends`) and keeps only on-topic ones using a keyword filter (gst, income tax,
+tds, audit, msme, capital gain…), falling back to a curated list of ~20 evergreen
+CA topics. Topics already drafted or published are skipped, so it never repeats.
+
+```bash
+py blog_pipeline.py generate          # pick a topic, write email_blog/blog.json
+py blog_pipeline.py list              # show the queued post + published posts
+```
+
+Set `OPENROUTER_API_KEY` (and optional `MODEL`) in `.env` (copy from `.env.example`).
+`.env` is git-ignored — never commit real keys.
+
+> The legacy local-review commands (`approve <slug>` / `reject <slug>`) still operate
+> on `./drafts` for anyone who prefers approving on disk instead of by email.
+
+### 2 & 3. Email approval + auto-publish
+
+The approval loop lives in `email_blog/` (see `email_blog/` for full setup). In short:
+
+```bash
+cd email_blog
+.\run.ps1 --once            # email the current blog.json to the partner for approval
+.\run.ps1 --check-replies   # read the reply: "yes" publishes, "no" skips, a .txt attachment replaces the post
+```
+
+On approval the post is written to `src/content/posts/<slug>.json`, committed and
+pushed; Cloudflare redeploys the live site automatically.
+
+One-time setup for the email step: `py email_blog/blogchecker.py --encrypt` (store the
+Gmail App Password), then `setx BLOG_FERNET_KEY "<key>"`.
+
+### Make it fully hands-off
+
+Register the schedules once and the whole chain runs unattended:
+
+```powershell
+# weekly generation (Monday 8am): writes a fresh email_blog/blog.json
+$a = New-ScheduledTaskAction -Execute "py" -Argument "blog_pipeline.py generate" -WorkingDirectory "D:\dpsca-astro"
+Register-ScheduledTask -TaskName "DPS Blog - Generate" -Action $a `
+  -Trigger (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 8am)
+
+# weekly send (Monday 9am) + reply-check (every 30 min): publishes on approval
+cd email_blog ; .\schedule.ps1
+```
+
+Result: every Monday a new draft is generated at 8am, emailed at 9am, and the
+partner's "yes" reply (or a `.txt` edit) goes live within ~30 minutes — no manual steps.
 
 ## Notes before go-live
 

@@ -1,15 +1,24 @@
-"""Weekly auto-blog pipeline for DPS & Co (DRAFT-and-review workflow).
+"""Weekly auto-blog pipeline for DPS & Co (generate -> email-approve -> publish).
 
 Topics: trending finance/accountancy terms (Google Trends, optional) filtered
 against a curated India tax/finance list, with the curated list as fallback.
-Generation: OpenRouter (your key). Output: a DRAFT JSON in ./drafts for a partner
-to review. Approving moves it to ./src/content/posts where Astro renders it live.
+Generation: OpenRouter (your key).
+
+Output (primary, the email chain): `generate` writes the new post into
+``email_blog/blog.json``. From there the email approval pipeline takes over —
+``email_blog/blogchecker.py --once`` emails it to the partner, and his "yes"
+reply publishes it live (see email_blog/). This makes the whole loop hands-off:
+    Monday: generate -> email goes out -> partner replies "yes" -> site redeploys.
+
+The post is written in the site's full schema AND carries a plain-text ``content``
+field, so the approval email is readable and the published post keeps its rich
+fields (headline, faqs, etc.).
 
 Commands:
-    py blog_pipeline.py generate          # create one new draft from a fresh topic
-    py blog_pipeline.py list              # show drafts (pending) and published posts
-    py blog_pipeline.py approve <slug>    # move a draft -> src/content/posts (then run: npm run build)
-    py blog_pipeline.py reject  <slug>    # delete a draft
+    py blog_pipeline.py generate          # pick a fresh topic, write email_blog/blog.json
+    py blog_pipeline.py list              # show the queued post and published posts
+    py blog_pipeline.py approve <slug>    # (legacy local path) move a ./drafts file -> src/content/posts
+    py blog_pipeline.py reject  <slug>    # (legacy local path) delete a ./drafts file
 
 Config (.env or environment): OPENROUTER_API_KEY, MODEL (default a free model).
 """
@@ -20,12 +29,15 @@ import re
 import sys
 import time
 from datetime import date
+from html import unescape as _html_unescape
 
 import httpx
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DRAFTS = os.path.join(HERE, "drafts")
 POSTS = os.path.join(HERE, "src", "content", "posts")
+# `generate` writes here; email_blog/blogchecker.py reads this for the approval email.
+EMAIL_BLOG_JSON = os.path.join(HERE, "email_blog", "blog.json")
 TODAY = date.today().isoformat()
 
 
@@ -64,6 +76,21 @@ TOPIC_FILTER = ["gst", "income tax", "itr", "tds", "tax", "audit", "msme", "comp
 def _slugify(text: str) -> str:
     s = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
     return s[:60]
+
+
+def _html_to_text(html: str) -> str:
+    """Render the generated HTML body to readable plain text for the approval email.
+    Headings and paragraphs become line breaks; remaining tags are stripped."""
+    text = html or ""
+    text = re.sub(r"(?i)<h2[^>]*>", "\n\n", text)
+    text = re.sub(r"(?i)</h2\s*>", "\n", text)
+    text = re.sub(r"(?i)</p\s*>", "\n\n", text)
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)          # drop any remaining tags
+    text = _html_unescape(text)
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)       # collapse blank-line runs
+    return text.strip()
 
 
 def _existing_slugs() -> set[str]:
@@ -167,32 +194,51 @@ def generate() -> None:
     except json.JSONDecodeError as e:
         print("Could not parse JSON:", e); return
 
-    # Assemble the draft in the structure Astro expects, plus a compliance footer.
+    # Assemble the post in the site's full schema (so the published version keeps
+    # headline/faqs/etc.) plus a plain-text `content` field so the approval email
+    # reads cleanly. email_blog/blogchecker.py uses `content` for the email body and
+    # the body+lede fields when it publishes an approved post.
+    body_html = data.get("body", "")
     post = {
         "slug": slug, "date": TODAY,
+        "title": data.get("title", topic)[:60],
+        "author": "DPS & Co",
         "card": data.get("card", topic), "crumb": data.get("crumb", topic[:20]),
         "headline": data.get("headline", topic), "h1": data.get("h1", topic),
-        "title": data.get("title", topic)[:60], "desc": data.get("desc", "")[:155],
-        "lede": data.get("lede", ""), "body": data.get("body", ""),
+        "desc": data.get("desc", "")[:155],
+        "lede": data.get("lede", ""), "body": body_html,
+        "content": _html_to_text(body_html),  # plain-text body for the approval email
         "faqs": data.get("faqs", []),
         "source": "This article is general information, not advice. Tax rules and figures change — confirm current provisions with the official portals (incometax.gov.in / gst.gov.in) or contact us before acting.",
         "cta": "/contact/", "cta_label": "Talk to our team",
-        "_status": "DRAFT — needs partner review before publishing",
     }
-    os.makedirs(DRAFTS, exist_ok=True)
-    out = os.path.join(DRAFTS, f"{slug}.json")
-    with open(out, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(EMAIL_BLOG_JSON), exist_ok=True)
+    with open(EMAIL_BLOG_JSON, "w", encoding="utf-8") as f:
         json.dump(post, f, indent=2, ensure_ascii=False)
-    print(f"\nDRAFT written: {out}")
-    print("Review it, edit if needed, then:  py blog_pipeline.py approve", slug)
+    print(f"\nQueued for approval: {EMAIL_BLOG_JSON}")
+    print("Review/edit it if you like, then send the approval email:")
+    print(r"    cd email_blog ; .\run.ps1 --once")
+    print("(or just wait for the weekly 'DPS Blog Email - Send' scheduled task.)")
 
 
 def list_all() -> None:
-    drafts = [f[:-5] for f in os.listdir(DRAFTS)] if os.path.isdir(DRAFTS) else []
-    posts = [f[:-5] for f in os.listdir(POSTS)] if os.path.isdir(POSTS) else []
-    print("DRAFTS (pending review):")
-    for s in drafts: print("  -", s)
-    print("PUBLISHED (live after build):")
+    posts = [f[:-5] for f in os.listdir(POSTS) if f.endswith(".json")] if os.path.isdir(POSTS) else []
+    drafts = [f[:-5] for f in os.listdir(DRAFTS) if f.endswith(".json")] if os.path.isdir(DRAFTS) else []
+    print("QUEUED FOR APPROVAL (email_blog/blog.json):")
+    if os.path.exists(EMAIL_BLOG_JSON):
+        try:
+            with open(EMAIL_BLOG_JSON, encoding="utf-8") as f:
+                q = json.load(f)
+            title = q.get("title") if isinstance(q, dict) else None
+            print(f"  - {q.get('slug', '?')}  ({title or 'untitled'})")
+        except (ValueError, OSError) as exc:
+            print("  - (could not read blog.json:", exc, ")")
+    else:
+        print("  - (none)")
+    if drafts:
+        print("LEGACY DRAFTS (./drafts, local approve path):")
+        for s in drafts: print("  -", s)
+    print("PUBLISHED (live after deploy):")
     for s in posts: print("  -", s)
 
 
